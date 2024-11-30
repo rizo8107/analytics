@@ -1,38 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import PocketBase from 'pocketbase';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, ComposedChart } from 'recharts';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  ComposedChart,
-  Line
-} from 'recharts';
 import { format, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { motion } from 'framer-motion';
-
-interface PaymentData {
-  amount: string | number;
-  collectionId: string;
-  collectionName: string;
-  contact: string | number;
-  created_at: string;
-  currency: string;
-  description: string;
-  email: string;
-  id: string;
-  notes: string;
-  status: string;
-}
+import { PaymentData, DateRange } from '../../types/api';
+import PocketBase from '../../utils/pocketbase';
 
 interface PaymentMetrics {
   totalAmount: { [key: string]: number };
@@ -208,16 +181,12 @@ const PaymentAnalytics: React.FC = () => {
   useEffect(() => {
     let isSubscribed = true;
 
-    const fetchPayments = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        const pbInstance = new PocketBase(import.meta.env.VITE_POCKETBASE_URL || 'http://127.0.0.1:8090');
-        if (!pbInstance) {
-          throw new Error('Failed to initialize PocketBase');
-        }
-        const records = await pbInstance.collection('payment_data').getFullList({
+        const records = await PocketBase.collection('payment_data').getFullList({
           sort: '-created_at',
         });
 
@@ -238,7 +207,7 @@ const PaymentAnalytics: React.FC = () => {
       }
     };
 
-    fetchPayments();
+    fetchData();
 
     return () => {
       isSubscribed = false;

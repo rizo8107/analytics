@@ -5,19 +5,18 @@ import path from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  optimizeDeps: {
+    include: ['pocketbase']
+  },
   build: {
     commonjsOptions: {
       include: [/node_modules/],
       transformMixedEsModules: true
     }
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      'pocketbase': path.resolve(__dirname, 'node_modules/pocketbase/dist/pocketbase.es.mjs')
-    }
-  },
-  optimizeDeps: {
-    include: ['pocketbase']
   }
 })
